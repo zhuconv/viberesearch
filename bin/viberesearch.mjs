@@ -16,7 +16,7 @@ function run(cmd, args, opts = {}) {
 
 const repo = "zhuconv/viberesearch";
 const marketplace = "viberesearch";
-const plugin = "jiajun-core";
+const plugin = "core";
 
 console.log("Equipping viberesearch environment...");
 
@@ -58,7 +58,7 @@ To install or enable the plugin:
   codex
   /plugins
   choose marketplace: Viberesearch
-  install: jiajun-core
+  install: core
 `);
 } else {
   console.log("\nCodex CLI not found; skipping Codex setup.");

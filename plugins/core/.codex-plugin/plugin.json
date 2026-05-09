@@ -1,7 +1,7 @@
 {
-  "name": "jiajun-core",
+  "name": "core",
   "version": "0.1.0",
-  "description": "Jiajun's Codex environment: viberesearch skills, MCP configs, and workflow utilities.",
+  "description": "Viberesearch core: Codex skills, MCP configs, and workflow utilities.",
   "repository": "https://github.com/zhuconv/viberesearch",
   "license": "MIT",
   "skills": "./skills/",

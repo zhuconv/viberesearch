@@ -1,6 +1,6 @@
 {
-  "name": "jiajun-core",
-  "description": "Jiajun's Claude Code environment: viberesearch skills, agents, hooks, MCP configs, and workflow utilities.",
+  "name": "core",
+  "description": "Viberesearch core: Claude Code skills, agents, hooks, MCP configs, and workflow utilities.",
   "repository": "https://github.com/zhuconv/viberesearch",
   "license": "MIT",
   "skills": "./skills/",

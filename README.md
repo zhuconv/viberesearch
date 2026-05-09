@@ -8,7 +8,7 @@ This repo is three things at once:
 2. A **Codex plugin marketplace** (`.agents/plugins/marketplace.json`).
 3. An **`npx` bootstrap installer** (`bin/viberesearch.mjs`) that wires both CLIs to this repo on a fresh machine.
 
-Both marketplaces point to the same plugin directory: `plugins/jiajun-core/`. So every skill you add, every agent you write, every MCP server you register lives in one place and shows up in both CLIs.
+Both marketplaces point to the same plugin directory: `plugins/core/`. So every skill you add, every agent you write, every MCP server you register lives in one place and shows up in both CLIs.
 
 ---
 
@@ -23,7 +23,7 @@ npx --yes github:zhuconv/viberesearch
 What this does, in order:
 
 1. Confirms `git`, `node`, and `npm` exist.
-2. If `claude` (Claude Code CLI) is on your `PATH`: adds the marketplace, updates it, installs `jiajun-core` at user scope, and lists installed plugins.
+2. If `claude` (Claude Code CLI) is on your `PATH`: adds the marketplace, updates it, installs `core` at user scope, and lists installed plugins.
 3. If `codex` is on your `PATH`: adds and upgrades the marketplace, then prints instructions to finish the install via `/plugins` inside Codex.
 4. If `gh` is installed, runs `gh auth status` so you know whether the GitHub MCP server will work.
 5. If `op` (1Password CLI) is installed, runs `op whoami` for the same reason.
@@ -41,7 +41,7 @@ If you'd rather not run the bootstrap, register the marketplace directly inside 
 ```bash
 claude plugin marketplace add zhuconv/viberesearch
 claude plugin marketplace update viberesearch
-claude plugin install jiajun-core@viberesearch --scope user
+claude plugin install core@viberesearch --scope user
 claude plugin list
 ```
 
@@ -69,7 +69,7 @@ Then inside Codex:
 /plugins
 ```
 
-Pick the `Viberesearch` marketplace, install `jiajun-core`, and confirm with:
+Pick the `Viberesearch` marketplace, install `core`, and confirm with:
 
 ```
 /skills
@@ -93,7 +93,7 @@ viberesearch/
 │       └── marketplace.json          # Marketplace manifest consumed by Codex
 ├── .gitignore                        # Ignores node_modules, .env, .DS_Store, *.log
 └── plugins/
-    └── jiajun-core/                  # The single plugin both marketplaces expose
+    └── core/                  # The single plugin both marketplaces expose
         ├── .claude-plugin/
         │   └── plugin.json           # Plugin manifest (Claude Code variant)
         ├── .codex-plugin/
@@ -113,7 +113,7 @@ viberesearch/
             └── doctor.sh             # Pre-push validator
 ```
 
-The top-level files are **marketplace-level** — they describe a catalog of plugins. Everything inside `plugins/jiajun-core/` is **plugin-level** — it describes one installable unit.
+The top-level files are **marketplace-level** — they describe a catalog of plugins. Everything inside `plugins/core/` is **plugin-level** — it describes one installable unit.
 
 ### Mental model: three layers
 
@@ -121,7 +121,7 @@ When something looks broken, ask which of these three layers it lives in.
 
 1. **Marketplace manifest** — `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`. These are catalogs. Each lists the plugins this repo exposes and where to find them. The two files exist because Claude Code and Codex use slightly different schemas. Adding a new plugin means editing both.
 
-2. **Plugin manifest** — `plugins/jiajun-core/.claude-plugin/plugin.json` and `plugins/jiajun-core/.codex-plugin/plugin.json`. These declare a single plugin's metadata and tell the CLI where to find its artifacts (skills, agents, hooks, MCP servers). They live inside the plugin directory, not at the repo root. Both files point at the same `./skills/`, the same `./.mcp.json`, etc. — that's how Claude Code and Codex share a single artifact tree.
+2. **Plugin manifest** — `plugins/core/.claude-plugin/plugin.json` and `plugins/core/.codex-plugin/plugin.json`. These declare a single plugin's metadata and tell the CLI where to find its artifacts (skills, agents, hooks, MCP servers). They live inside the plugin directory, not at the repo root. Both files point at the same `./skills/`, the same `./.mcp.json`, etc. — that's how Claude Code and Codex share a single artifact tree.
 
 3. **Artifacts** — the actual content the model uses at runtime: `skills/<name>/SKILL.md`, `agents/<name>.md`, `hooks/hooks.json`, and the entries in `.mcp.json`. This is what you'll touch most often.
 
@@ -139,11 +139,11 @@ Quick glossary, since these terms collide:
 
 ## Extending the plugin
 
-Everything below modifies files under `plugins/jiajun-core/`. After any change: run `bash plugins/jiajun-core/scripts/doctor.sh`, then `/reload-plugins` inside Claude Code (or restart Codex) to pick up the new artifact.
+Everything below modifies files under `plugins/core/`. After any change: run `bash plugins/core/scripts/doctor.sh`, then `/reload-plugins` inside Claude Code (or restart Codex) to pick up the new artifact.
 
 ### Add a new skill
 
-**Where:** `plugins/jiajun-core/skills/<skill-name>/SKILL.md`. The directory name and the frontmatter `name` should match.
+**Where:** `plugins/core/skills/<skill-name>/SKILL.md`. The directory name and the frontmatter `name` should match.
 
 **Minimum frontmatter:**
 
@@ -156,7 +156,7 @@ description: <one sentence describing exactly when this skill should be invoked>
 <the actual instructions the model will follow when this skill is loaded>
 ```
 
-**Example** — `plugins/jiajun-core/skills/dataset-card/SKILL.md`:
+**Example** — `plugins/core/skills/dataset-card/SKILL.md`:
 
 ```md
 ---
@@ -178,7 +178,7 @@ Cite the file or URL each fact came from.
 
 ### Add a new sub-agent
 
-**Where:** `plugins/jiajun-core/agents/<agent-name>.md`. Claude Code only — Codex does not consume this directory.
+**Where:** `plugins/core/agents/<agent-name>.md`. Claude Code only — Codex does not consume this directory.
 
 **Minimum frontmatter:**
 
@@ -194,7 +194,7 @@ maxTurns: 20
 <system prompt for this sub-agent>
 ```
 
-**Example** — `plugins/jiajun-core/agents/literature-scout.md`:
+**Example** — `plugins/core/agents/literature-scout.md`:
 
 ```md
 ---
@@ -214,7 +214,7 @@ Skip surveys older than three years unless explicitly requested.
 
 ### Add an MCP server
 
-**Where:** `plugins/jiajun-core/.mcp.json`. Add an entry under `mcpServers`. This file is shared — both Claude Code and Codex pick it up.
+**Where:** `plugins/core/.mcp.json`. Add an entry under `mcpServers`. This file is shared — both Claude Code and Codex pick it up.
 
 **Minimum schema:**
 
@@ -261,7 +261,7 @@ The current `.mcp.json` already wires three servers as a reference: `context7` (
 
 ### Add a hook
 
-**Where:** `plugins/jiajun-core/hooks/hooks.json`. Claude Code only. Default content is `{ "hooks": {} }` — wide open and intentional.
+**Where:** `plugins/core/hooks/hooks.json`. Claude Code only. Default content is `{ "hooks": {} }` — wide open and intentional.
 
 **Hook events** (the most common ones):
 
@@ -296,9 +296,9 @@ The current `.mcp.json` already wires three servers as a reference: `context7` (
 
 ### Add a new plugin to the marketplace
 
-This is the "marketplace is not the plugin" lesson. To ship a second plugin alongside `jiajun-core`:
+This is the "marketplace is not the plugin" lesson. To ship a second plugin alongside `core`:
 
-1. **Duplicate the plugin directory:** `cp -r plugins/jiajun-core plugins/<new-plugin>`.
+1. **Duplicate the plugin directory:** `cp -r plugins/core plugins/<new-plugin>`.
 
 2. **Update both plugin manifests inside it:**
    - `plugins/<new-plugin>/.claude-plugin/plugin.json` — change `name` and `description`.
@@ -337,7 +337,7 @@ This is the "marketplace is not the plugin" lesson. To ship a second plugin alon
 4. **Validate and reinstall:**
 
    ```bash
-   bash plugins/jiajun-core/scripts/doctor.sh
+   bash plugins/core/scripts/doctor.sh
    claude plugin marketplace update viberesearch
    claude plugin install <new-plugin>@viberesearch --scope user
    ```
@@ -351,7 +351,7 @@ If you forget the marketplace edits, `claude plugin install` reports the plugin 
 - **Be specific in skill descriptions.** "Reviews code" loses to "Reviews the recent git diff for correctness, hidden assumptions, and reproducibility issues." The model routes on these strings.
 - **Read current code, don't bake constants.** A skill that says "the loss is MSE" goes stale; one that says "open `train.py` and report the loss function" stays correct.
 - **Never commit secrets.** Tokens go in `.env` (gitignored) or 1Password; `.mcp.json` only ever holds `${VAR}` placeholders.
-- **Run `bash plugins/jiajun-core/scripts/doctor.sh` before pushing.** It catches most of the structural mistakes that would only surface inside the CLI.
+- **Run `bash plugins/core/scripts/doctor.sh` before pushing.** It catches most of the structural mistakes that would only surface inside the CLI.
 - **One skill, one job.** If a skill description starts to grow conjunctions ("and also..."), split it. The router picks one skill at a time.
 
 ---
@@ -389,14 +389,14 @@ The `.gitignore` already excludes `.env`, `.env.*`, `.DS_Store`, `*.log`, and `n
 Before pushing or filing a bug:
 
 ```bash
-bash plugins/jiajun-core/scripts/doctor.sh
+bash plugins/core/scripts/doctor.sh
 ```
 
 It checks that:
 
 - `package.json` exists and parses as JSON.
 - Both marketplace manifests exist and parse.
-- Both plugin manifests inside `jiajun-core` exist and parse.
+- Both plugin manifests inside `core` exist and parse.
 - `.mcp.json` and `hooks/hooks.json` exist and parse.
 - Every `skills/*/SKILL.md` exists.
 
@@ -422,7 +422,7 @@ from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-re
 
 **Sub-agent not delegated to.** The parent decides based on the `description`. If it never picks your agent, the description is too generic or overlaps with another agent. Tighten it, then `/reload-plugins`.
 
-**Codex shows the marketplace but not the plugin.** Codex installs are interactive: `codex plugin marketplace add` only registers the catalog; you still need `/plugins` inside the Codex session to install `jiajun-core` from it. The bootstrap prints this reminder for the same reason.
+**Codex shows the marketplace but not the plugin.** Codex installs are interactive: `codex plugin marketplace add` only registers the catalog; you still need `/plugins` inside the Codex session to install `core` from it. The bootstrap prints this reminder for the same reason.
 
 ---
 

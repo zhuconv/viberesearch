@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "jiajun-core",
+      "name": "core",
       "source": {
         "source": "local",
-        "path": "./plugins/jiajun-core"
+        "path": "./plugins/core"
       },
       "policy": {
         "installation": "AVAILABLE",
