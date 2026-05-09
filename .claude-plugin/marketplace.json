@@ -1,0 +1,14 @@
+{
+  "name": "viberesearch",
+  "owner": {
+    "name": "Jiajun Zhu"
+  },
+  "plugins": [
+    {
+      "name": "jiajun-core",
+      "source": "./plugins/jiajun-core",
+      "description": "Personal viberesearch setup: skills, agents, MCP configs, hooks, and workflow utilities.",
+      "category": "productivity"
+    }
+  ]
+}

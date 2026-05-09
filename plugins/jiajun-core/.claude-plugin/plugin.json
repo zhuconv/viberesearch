@@ -1,0 +1,10 @@
+{
+  "name": "jiajun-core",
+  "description": "Jiajun's Claude Code environment: viberesearch skills, agents, hooks, MCP configs, and workflow utilities.",
+  "repository": "https://github.com/zhuconv/viberesearch",
+  "license": "MIT",
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}

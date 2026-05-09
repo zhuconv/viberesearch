@@ -1,0 +1,8 @@
+{
+  "name": "viberesearch",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "viberesearch": "./bin/viberesearch.mjs"
+  }
+}
