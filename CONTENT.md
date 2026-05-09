@@ -20,66 +20,27 @@ Both Claude Code and Codex consume `skills/`.
 
 ## Sub-agents (Claude Code only)
 
-Sub-agents are dispatched by the parent agent when it decides the description matches the sub-task. Codex doesn't read `agents/`.
-
-| Name                  | Description                                                                                            | Model  | Effort | Max turns |
-| --------------------- | ------------------------------------------------------------------------------------------------------ | ------ | ------ | --------- |
-| `reviewer`            | Reviews code, experiments, and research artifacts for correctness and hidden failure modes.            | sonnet | medium | 20        |
-| `experiment-designer` | Designs minimal, controlled, reproducible experiments — hypothesis, baseline, metric, failure modes.   | sonnet | medium | 20        |
+None shipped by default. Add to `plugins/core/agents/<name>.md` when a sub-task warrants its own context, persona, or tool budget — see [`INSTRUCTION.md`](./INSTRUCTION.md) §2.
 
 ---
 
 ## MCP servers (shared between Claude Code and Codex)
 
-Spawned by the CLI on session start. The CLI substitutes `${VAR}` placeholders in `.mcp.json` from the live shell environment at spawn time — so any required env var must be exported in the shell that launches the CLI.
-
-| Name           | Purpose                                                                  | Transport          | Env var required               |
-| -------------- | ------------------------------------------------------------------------ | ------------------ | ------------------------------ |
-| `context7`     | Fetch up-to-date documentation for libraries, frameworks, SDKs, CLI tools | stdio (`npx`)      | none                           |
-| `supermemory`  | Persistent cross-session memory via the supermemory.ai remote MCP        | remote (mcp-remote) | none (uses remote auth flow)   |
-| `github`       | GitHub repo / issue / PR / search operations                             | stdio (`npx`)      | `GITHUB_PERSONAL_ACCESS_TOKEN` |
-
-If `/mcp` shows `github` as unhealthy, your shell didn't have the token exported when the CLI launched — restart the CLI from a shell that does.
+None registered by default. Add to `plugins/core/.mcp.json` when the agent needs a new tool or data source — see [`INSTRUCTION.md`](./INSTRUCTION.md) §5. Spawned MCP servers receive the live shell environment at startup; required env vars must be exported before launching the CLI.
 
 ---
 
 ## Hooks (Claude Code only)
 
-`hooks/hooks.json` is currently `{ "hooks": {} }` — no hooks ship by default. Add `PreToolUse` / `PostToolUse` / `Stop` etc. entries when a deterministic lifecycle rule is needed; see [`INSTRUCTION.md`](./INSTRUCTION.md) §3.
+`hooks/hooks.json` is `{ "hooks": {} }`. Add `PreToolUse` / `PostToolUse` / `Stop` etc. entries when a deterministic lifecycle rule is needed — see [`INSTRUCTION.md`](./INSTRUCTION.md) §3.
 
 ---
 
 ## Scripts
 
-| Path                | Role                                                                                  |
-| ------------------- | ------------------------------------------------------------------------------------- |
+| Path                | Role                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------ |
 | `scripts/doctor.sh` | Pre-push validator. Confirms manifests parse and expected files exist. Run before pushing. |
-
----
-
-## Secrets / environment
-
-The github MCP server reads `GITHUB_PERSONAL_ACCESS_TOKEN` from the shell that launched the CLI. Two recommended flows:
-
-**Plain `.env`** (already gitignored):
-
-```bash
-# in ~/.env
-export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxx
-```
-
-```bash
-# in ~/.zshrc or ~/.bashrc
-[ -f ~/.env ] && source ~/.env
-```
-
-**1Password CLI**:
-
-```bash
-export GITHUB_PERSONAL_ACCESS_TOKEN="$(op read 'op://Personal/GitHub PAT/token')"
-```
-
-`.gitignore` already covers `.env`, `.env.*`, `.DS_Store`, `*.log`, `node_modules/` — but `.env.example` is intentionally allowed for templates.
 
 ---
 
@@ -90,7 +51,7 @@ export GITHUB_PERSONAL_ACCESS_TOKEN="$(op read 'op://Personal/GitHub PAT/token')
 ```
 /reload-plugins
 /skills           # should list every skill in the table above (prefixed `core:` when ambiguous)
-/mcp              # should list every MCP server above
+/mcp              # should be empty until MCP servers are added to .mcp.json
 /doctor           # plugin health summary
 ```
 

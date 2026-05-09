@@ -28,7 +28,7 @@ What this does, in order:
 1. Confirms `git`, `node`, and `npm` exist.
 2. If `claude` (Claude Code CLI) is on your `PATH`: adds the marketplace, updates it, installs `core` at user scope, and lists installed plugins.
 3. If `codex` is on your `PATH`: adds and upgrades the marketplace, then prints instructions to finish the install via `/plugins` inside Codex.
-4. If `gh` is installed, runs `gh auth status` so you know whether tokens for any GitHub-flavoured MCP server will resolve.
+4. If `gh` is installed, runs `gh auth status` so you know GitHub-token-using MCP servers will resolve when you add them.
 5. If `op` (1Password CLI) is installed, runs `op whoami` for the same reason.
 
 If a CLI isn't installed, that section is skipped silently — re-run the same command after you install it.

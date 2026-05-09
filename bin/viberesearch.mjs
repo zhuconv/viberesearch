@@ -66,14 +66,10 @@ To install or enable the plugin:
 
 if (has("gh")) {
   run("gh", ["auth", "status"], { allowFail: true });
-} else {
-  console.log("\ngh not found; GitHub MCP may need GITHUB_PERSONAL_ACCESS_TOKEN.");
 }
 
 if (has("op")) {
   run("op", ["whoami"], { allowFail: true });
-} else {
-  console.log("1Password CLI not found; skipping op check.");
 }
 
 console.log(`
