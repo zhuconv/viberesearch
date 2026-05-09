@@ -20,8 +20,10 @@ node -e 'JSON.parse(require("fs").readFileSync("plugins/core/.codex-plugin/plugi
 node -e 'JSON.parse(require("fs").readFileSync("plugins/core/.mcp.json","utf8"))'
 node -e 'JSON.parse(require("fs").readFileSync("plugins/core/hooks/hooks.json","utf8"))'
 
+shopt -s nullglob
 for f in plugins/core/skills/*/SKILL.md; do
   test -f "$f"
 done
+shopt -u nullglob
 
 echo "doctor ok"
