@@ -10,9 +10,11 @@ Live inventory of every artifact `plugins/core/` contributes to Claude Code and 
 
 Skills load when their `description` matches user intent. There is no `/<name>` slash command unless one is explicitly added.
 
-| Name           | Trigger description                                                                                                                                                                                                  |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `slidev-deck`  | Author or refactor a Slidev deck (a `slides.md`, especially under jiajun's `slides-hub` repo) following the concise "one-claim-per-slide" house style; covers layout grammar, page-size budgets, the build/verify loop, and the recurring overflow / separator / illustration pitfalls. |
+| Name               | Trigger description                                                                                                                                                                                                                                                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `grill-me`         | Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when the user wants to stress-test a plan, get grilled on their design, or says "grill me". Adapted from `mattpocock/skills`.                  |
+| `grill-with-docs`  | Same grilling loop, but anchored to the project's existing domain model: sharpens terminology and updates docs (CONTEXT.md, ADRs) inline as decisions crystallise. Ships supporting templates `ADR-FORMAT.md` and `CONTEXT-FORMAT.md` in the skill dir. Adapted from `mattpocock/skills`.   |
+| `slidev-deck`      | Author or refactor a Slidev deck (a `slides.md`, especially under jiajun's `slides-hub` repo) following the concise "one-claim-per-slide" house style; covers layout grammar, page-size budgets, the build/verify loop, and the recurring overflow / separator / illustration pitfalls.   |
 
 Both Claude Code and Codex consume `skills/`.
 
