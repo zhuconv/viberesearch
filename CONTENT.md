@@ -12,9 +12,10 @@ Skills load when their `description` matches user intent. There is no `/<name>` 
 
 | Name               | Trigger description                                                                                                                                                                                                                                                                       |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `grill-me`         | Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when the user wants to stress-test a plan, get grilled on their design, or says "grill me". Adapted from `mattpocock/skills`.                  |
-| `grill-with-docs`  | Same grilling loop, but anchored to the project's existing domain model: sharpens terminology and updates docs (CONTEXT.md, ADRs) inline as decisions crystallise. Ships supporting templates `ADR-FORMAT.md` and `CONTEXT-FORMAT.md` in the skill dir. Adapted from `mattpocock/skills`.   |
-| `slidev-deck`      | Author or refactor a Slidev deck (a `slides.md`, especially under jiajun's `slides-hub` repo) following the concise "one-claim-per-slide" house style; covers layout grammar, page-size budgets, the build/verify loop, and the recurring overflow / separator / illustration pitfalls.   |
+| [`grill-me`](plugins/core/skills/grill-me/SKILL.md) | Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when the user wants to stress-test a plan, get grilled on their design, or says "grill me". Adapted from `mattpocock/skills`.                  |
+| [`grill-with-docs`](plugins/core/skills/grill-with-docs/SKILL.md) | Same grilling loop, but anchored to the project's existing domain model: sharpens terminology and updates docs (CONTEXT.md, ADRs) inline as decisions crystallise. Ships supporting templates `ADR-FORMAT.md` and `CONTEXT-FORMAT.md` in the skill dir. Adapted from `mattpocock/skills`.   |
+| [`slidev-deck`](plugins/core/skills/slidev-deck/SKILL.md) | Author or refactor a Slidev deck (a `slides.md`, especially under jiajun's `slides-hub` repo) following the concise "one-claim-per-slide" house style; covers layout grammar, page-size budgets, the build/verify loop, and the recurring overflow / separator / illustration pitfalls.   |
+| [`svg-to-png-render`](plugins/core/skills/svg-to-png-render/SKILL.md) | Render SVG files to exact-dimension PNG screenshots using a real Chromium browser. Use when converting SVG diagrams or vector artifacts into PNGs for GitHub README display, documentation, visual verification, or non-cropped export.                                           |
 
 Both Claude Code and Codex consume `skills/`.
 
@@ -43,6 +44,7 @@ None registered by default. Add to `plugins/core/.mcp.json` when the agent needs
 | Path                | Role                                                                                       |
 | ------------------- | ------------------------------------------------------------------------------------------ |
 | `scripts/doctor.sh` | Pre-push validator. Confirms manifests parse and expected files exist. Run before pushing. |
+| `skills/svg-to-png-render/scripts/render_svg_png.py` | Skill-bundled helper that renders SVG diagrams to exact-dimension PNGs through Playwright/Chromium. |
 
 ---
 
