@@ -50,15 +50,13 @@ if (has("codex")) {
   console.log("\nConfiguring Codex...");
   run("codex", ["plugin", "marketplace", "add", repo], { allowFail: true });
   run("codex", ["plugin", "marketplace", "upgrade", marketplace], { allowFail: true });
+  run("codex", ["plugin", "add", `${plugin}@${marketplace}`]);
+  run("codex", ["plugin", "list"], { allowFail: true });
 
   console.log(`
-Codex marketplace has been registered.
+Codex marketplace and plugin have been installed.
 
-To install or enable the plugin:
-  codex
-  /plugins
-  choose marketplace: Viberesearch
-  install: core
+Start a new Codex session so it picks up the plugin's skills and tools.
 `);
 } else {
   console.log("\nCodex CLI not found; skipping Codex setup.");

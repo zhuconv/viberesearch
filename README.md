@@ -27,7 +27,7 @@ What this does, in order:
 
 1. Confirms `git`, `node`, and `npm` exist.
 2. If `claude` (Claude Code CLI) is on your `PATH`: adds the marketplace, updates it, installs `core` at user scope, and lists installed plugins.
-3. If `codex` is on your `PATH`: adds and upgrades the marketplace, then prints instructions to finish the install via `/plugins` inside Codex.
+3. If `codex` is on your `PATH`: adds and upgrades the marketplace, installs `core`, and lists the available plugins.
 4. If `gh` is installed, runs `gh auth status` so you know GitHub-token-using MCP servers will resolve when you add them.
 5. If `op` (1Password CLI) is installed, runs `op whoami` for the same reason.
 
@@ -64,15 +64,11 @@ The expected `/skills` and `/mcp` output matches what's listed in [`CONTENT.md`]
 ```bash
 codex plugin marketplace add zhuconv/viberesearch
 codex plugin marketplace upgrade viberesearch
+codex plugin add core@viberesearch
+codex plugin list
 ```
 
-Then inside Codex:
-
-```
-/plugins
-```
-
-Pick the `Viberesearch` marketplace, install `core`, and confirm with:
+Then start a new Codex session and confirm with:
 
 ```
 /skills
@@ -188,7 +184,7 @@ It does not validate frontmatter inside `SKILL.md` or `agents/*.md` — those er
 npx --yes github:zhuconv/viberesearch
 ```
 
-from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-registers and updates the marketplace, which forces both CLIs to re-read your edits.
+from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-registers and updates the marketplace, then installs or refreshes the plugin so both CLIs can pick up your edits.
 
 ---
 
@@ -204,7 +200,7 @@ from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-re
 
 **Sub-agent not delegated to.** The parent decides based on the `description`. If it never picks your agent, the description is too generic or overlaps with another agent. Tighten it, then `/reload-plugins`.
 
-**Codex shows the marketplace but not the plugin.** Codex installs are interactive: `codex plugin marketplace add` only registers the catalog; you still need `/plugins` inside the Codex session to install `core` from it. The bootstrap prints this reminder for the same reason.
+**Codex shows the marketplace but not the plugin.** `codex plugin marketplace add` only registers the catalog. Install `core` with `codex plugin add core@viberesearch`, then start a new Codex session. The bootstrap performs this install automatically.
 
 **Plugin install fails with `agents: Invalid input` (or similar manifest validation error).** `plugin.json` should declare metadata only — drop any `skills`/`agents`/`hooks`/`mcpServers` path fields, since Claude Code auto-discovers those directories by convention.
 

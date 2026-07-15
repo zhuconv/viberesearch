@@ -61,7 +61,7 @@ None registered by default. Add to `plugins/core/.mcp.json` when the agent needs
 
 ### Inside Codex
 
-After picking the marketplace via `/plugins` and installing `core`:
+After running the bootstrap (or installing manually with `codex plugin add core@viberesearch`), start a new Codex session and run:
 
 ```
 /skills           # same skill list (Codex skips agents/ and hooks/)
