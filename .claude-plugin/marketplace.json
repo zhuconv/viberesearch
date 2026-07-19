@@ -30,6 +30,15 @@
         "./skills/research/grill-with-docs"
       ],
       "version": "0.3.0"
+    },
+    {
+      "name": "engineering",
+      "source": {
+        "source": "github",
+        "repo": "mattpocock/skills"
+      },
+      "description": "Engineering set: alias of Matt Pocock's promoted skills (mattpocock/skills) — grilling, spec/ticket flows, TDD, code review, domain modelling. Content is maintained upstream.",
+      "category": "engineering"
     }
   ]
 }

@@ -8,10 +8,12 @@ This repo is three things at once:
 2. A **Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`).
 3. A **Codex plugin marketplace** (`.agents/plugins/marketplace.json`), plus an **`npx` bootstrap installer** (`bin/viberesearch.mjs`) that wires both CLIs on a fresh machine.
 
-Skills are organized into **two sets**, and every route respects them:
+Skills are organized into **two local sets**, and every route respects them:
 
 - **`report`** — producing output: Slidev decks, SVG→PNG rendering.
 - **`research`** — thinking: grilling workflows that stress-test plans and designs.
+
+A third set, **`engineering`**, is an **alias**: a marketplace entry whose source is `mattpocock/skills`, Matt Pocock's promoted engineering skill set, maintained upstream. `claude plugin install engineering@viberesearch` installs it; content never lives in this repo. The alias only works on the Claude plugin route — the `skills` CLI deliberately ignores cross-repo references in manifests, so for any other agent install Matt's engineering bucket directly with `npx skills add mattpocock/skills/skills/engineering -y` (a subpath source: only that bucket is discovered, no picker, no "Other").
 
 In the `npx skills add` interactive picker the sets appear as two toggleable groups (Report / Research). The grouping comes from `.claude-plugin/marketplace.json`, where each set is a plugin entry claiming its skills via an explicit `skills` path array — not from the directory names; a skill nobody claims would show under "Other". Claude Code installs the same two entries as separate plugins (`report@viberesearch`, `research@viberesearch`). Codex ships everything as one `core` plugin, because its manifest takes a single skills path (`./skills/`) that it scans recursively — it can't express two curated subsets.
 

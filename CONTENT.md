@@ -24,7 +24,11 @@ Skills load when their `description` matches user intent. There is no `/<name>` 
 | [`grill-me`](skills/research/grill-me/SKILL.md) | Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when the user wants to stress-test a plan, get grilled on their design, or says "grill me". Adapted from `mattpocock/skills`.                  |
 | [`grill-with-docs`](skills/research/grill-with-docs/SKILL.md) | Same grilling loop, but anchored to the project's existing domain model: sharpens terminology and updates docs (CONTEXT.md, ADRs) inline as decisions crystallise. Ships supporting templates `ADR-FORMAT.md` and `CONTEXT-FORMAT.md` in the skill dir. Adapted from `mattpocock/skills`.   |
 
-Both Claude Code and Codex consume `skills/`. The set a skill belongs to is declared in `.claude-plugin/marketplace.json` (the `skills` array of the set's plugin entry) — the directory placement under `skills/<set>/` mirrors it for humans, and `scripts/doctor.sh` enforces that the two stay in sync.
+### Set: `engineering` — alias of `mattpocock/skills` (`engineering@viberesearch`)
+
+No files in this repo. The marketplace entry's source points at [mattpocock/skills](https://github.com/mattpocock/skills); installing it delivers Matt's promoted set (grilling, spec/ticket flows, TDD, code review, domain modelling — maintained upstream). Claude route only: `claude plugin install engineering@viberesearch`. Other agents: `npx skills add mattpocock/skills/skills/engineering -y`.
+
+Both Claude Code and Codex consume `skills/`. The set a local skill belongs to is declared in `.claude-plugin/marketplace.json` (the `skills` array of the set's plugin entry) — the directory placement under `skills/<set>/` mirrors it for humans, and `scripts/doctor.sh` enforces that the two stay in sync.
 
 ---
 
