@@ -4,14 +4,32 @@
     "name": "zhuconv"
   },
   "metadata": {
-    "description": "Personal skills + plugin bundle for vibe research/coding: grilling workflows, Slidev decks, SVG rendering. Install skills via `npx skills add zhuconv/viberesearch`."
+    "description": "Personal skills + plugin bundle for vibe research/coding, in two sets: report (decks, figures) and research (plan grilling). Install skills via `npx skills add zhuconv/viberesearch`."
   },
   "plugins": [
     {
-      "name": "core",
+      "name": "report",
       "source": "./",
-      "description": "Viberesearch core plugin: skills, agents, MCP configs, hooks, and workflow utilities.",
-      "category": "productivity"
+      "strict": false,
+      "description": "Report set: authoring Slidev decks and rendering SVG diagrams to PNG for docs and presentations.",
+      "category": "productivity",
+      "skills": [
+        "./skills/report/slidev-deck",
+        "./skills/report/svg-to-png-render"
+      ],
+      "version": "0.3.0"
+    },
+    {
+      "name": "research",
+      "source": "./",
+      "strict": false,
+      "description": "Research set: grilling workflows that stress-test plans and designs, with optional docs/ADR updates.",
+      "category": "productivity",
+      "skills": [
+        "./skills/research/grill-me",
+        "./skills/research/grill-with-docs"
+      ],
+      "version": "0.3.0"
     }
   ]
 }

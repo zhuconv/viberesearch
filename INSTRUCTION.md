@@ -51,7 +51,7 @@ If you need a behaviour that must work in both CLIs, prefer **skills + MCP serve
 
 **When to choose it.** You catch yourself re-typing the same set of instructions ("when reviewing code, check correctness, then reproducibility, then…"). The model already knows how to do the underlying work; you just want it to follow your procedure when the right kind of task shows up.
 
-**Where it lives.** `skills/<skill-name>/SKILL.md`. Directory name and frontmatter `name` must match.
+**Where it lives.** `skills/<set>/<skill-name>/SKILL.md`, where `<set>` is `report` or `research`. Directory name and frontmatter `name` must match. After creating the skill, **claim it** by appending its path to the matching set entry's `skills` array in `.claude-plugin/marketplace.json` — Claude Code and the skills.sh set grouping both read that array (unclaimed skills are invisible to the Claude plugin and show under "Other" in `npx skills add`). Codex needs no registration; it scans `./skills/` recursively. `scripts/doctor.sh` fails if disk and claims drift.
 
 **Minimum schema:**
 
@@ -288,7 +288,7 @@ To register a new bin, add it to `package.json`:
 The `core` plugin (rooted at the top level of this repo) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to `core` directly** using the sections above. You don't create a new plugin for every new skill.
 
 You're touching the right files when:
-- you want one `claude plugin install core@viberesearch --scope user` to keep delivering more capability over time,
+- you want the installed set plugins (`report@viberesearch`, `research@viberesearch` on Claude; `core@viberesearch` on Codex) to keep delivering more capability over time,
 - the artifact serves the same workflow as the rest (research / coding loops),
 - it doesn't introduce dependencies or risks the rest of `core` doesn't already accept.
 
@@ -306,7 +306,7 @@ You're touching the right files when:
 
 **How to add one:**
 
-1. Create the plugin directory, mirroring the root layout (the `core` plugin lives at the repo root; additional plugins live under `plugins/`):
+1. First consider whether a new **set** is enough (a `strict: false` entry in `.claude-plugin/marketplace.json` claiming skills — no new directory tree). A separate plugin directory is only needed for non-skill artifacts with a different risk profile. If so, create it under `plugins/`:
    ```bash
    mkdir -p plugins/<new-plugin>/.claude-plugin plugins/<new-plugin>/.codex-plugin plugins/<new-plugin>/skills
    ```
@@ -323,7 +323,7 @@ You're touching the right files when:
    ```
 
 **Anti-patterns.**
-- Don't fork a plugin just to add one skill — that's a `skills/<name>/` change.
+- Don't fork a plugin just to add one skill — that's a `skills/<set>/<name>/` change plus a claim in the set's `marketplace.json` entry. A new *set* is also cheap: a new `skills/<set>/` directory plus a new `strict: false` entry in `.claude-plugin/marketplace.json` claiming its skills.
 - Don't forget to register in **both** marketplace files. Forgetting one half means it works in one CLI and silently doesn't in the other.
 
 ---
@@ -347,14 +347,13 @@ If `doctor.sh` doesn't catch a class of mistake you just ran into, extend it —
 viberesearch/
 ├── bin/<name>.mjs                       # 4b. top-level npx bin
 ├── .claude-plugin/
-│   ├── marketplace.json                 # 7. register plugins (Claude side)
-│   └── plugin.json                      # 6. `core` plugin manifest (Claude)
-├── .codex-plugin/plugin.json            # 6. `core` plugin manifest (Codex)
+│   └── marketplace.json                 # 6+7. Claude marketplace; set entries claim skills inline
+├── .codex-plugin/plugin.json            # 6. `core` plugin manifest (Codex; recursive ./skills/)
 ├── .agents/plugins/marketplace.json     # 7. register plugins (Codex side)
 ├── .mcp.json                            # 5. MCP servers
 ├── hooks/hooks.json                     # 3. hooks (Claude only)
 ├── agents/<name>.md                     # 2. sub-agents (Claude only)
-├── skills/<name>/SKILL.md               # 1. skills — also what `npx skills add` installs
+├── skills/<set>/<name>/SKILL.md         # 1. skills (sets: report, research) — also what `npx skills add` installs
 ├── scripts/<name>.sh                    # 4a. repo scripts
 └── plugins/<new-plugin>/                # 7. additional plugins live here
 ```

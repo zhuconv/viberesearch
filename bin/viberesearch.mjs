@@ -16,7 +16,8 @@ function run(cmd, args, opts = {}) {
 
 const repo = "zhuconv/viberesearch";
 const marketplace = "viberesearch";
-const plugin = "core";
+const claudePlugins = ["report", "research"];
+const codexPlugin = "core";
 
 console.log("Equipping viberesearch environment...");
 
@@ -39,8 +40,10 @@ if (has("claude")) {
   console.log("\nConfiguring Claude Code...");
   run("claude", ["plugin", "marketplace", "add", repo], { allowFail: true });
   run("claude", ["plugin", "marketplace", "update", marketplace], { allowFail: true });
-  run("claude", ["plugin", "install", `${plugin}@${marketplace}`, "--scope", "user"], { allowFail: true });
-  run("claude", ["plugin", "update", `${plugin}@${marketplace}`, "--scope", "user"], { allowFail: true });
+  for (const plugin of claudePlugins) {
+    run("claude", ["plugin", "install", `${plugin}@${marketplace}`, "--scope", "user"], { allowFail: true });
+    run("claude", ["plugin", "update", `${plugin}@${marketplace}`, "--scope", "user"], { allowFail: true });
+  }
   run("claude", ["plugin", "list"], { allowFail: true });
 } else {
   console.log("\nClaude Code CLI not found; skipping Claude setup.");
@@ -50,7 +53,7 @@ if (has("codex")) {
   console.log("\nConfiguring Codex...");
   run("codex", ["plugin", "marketplace", "add", repo], { allowFail: true });
   run("codex", ["plugin", "marketplace", "upgrade", marketplace], { allowFail: true });
-  run("codex", ["plugin", "add", `${plugin}@${marketplace}`]);
+  run("codex", ["plugin", "add", `${codexPlugin}@${marketplace}`]);
   run("codex", ["plugin", "list"], { allowFail: true });
 
   console.log(`
