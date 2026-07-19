@@ -1,14 +1,14 @@
 # viberesearch
 
-A personal, opinionated environment for vibe-coding and vibe-research with Claude Code and Codex. One repo, two CLIs, one shared bundle of skills, sub-agents, hooks, and MCP servers — installed in a single `npx` command.
+A personal, opinionated environment for vibe-coding and vibe-research with Claude Code and Codex. One repo, one shared bundle of skills, sub-agents, hooks, and MCP servers — installable into 60+ coding agents with a single command.
 
 This repo is three things at once:
 
-1. A **Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`).
-2. A **Codex plugin marketplace** (`.agents/plugins/marketplace.json`).
-3. An **`npx` bootstrap installer** (`bin/viberesearch.mjs`) that wires both CLIs to this repo on a fresh machine.
+1. A **skills repo** in the canonical [skills.sh](https://www.skills.sh) layout (`skills/<name>/SKILL.md`) — `npx skills add zhuconv/viberesearch` installs the skills into Claude Code, Codex, Cursor, and any other agent the [`skills` CLI](https://github.com/vercel-labs/skills) supports. **This is the primary install route.**
+2. A **Claude Code plugin marketplace** (`.claude-plugin/marketplace.json`).
+3. A **Codex plugin marketplace** (`.agents/plugins/marketplace.json`), plus an **`npx` bootstrap installer** (`bin/viberesearch.mjs`) that wires both CLIs on a fresh machine.
 
-Both marketplaces point to the same plugin directory: `plugins/core/`. So every skill you add, every agent you write, every MCP server you register lives in one place and shows up in both CLIs.
+The repo root doubles as the single `core` plugin: both marketplaces point their plugin source at `./`, and the `skills` CLI reads the same top-level `skills/` directory. Every skill lives in exactly one place and ships through every route. The plugin route only adds value over the skills.sh route for artifact types the skills standard doesn't cover — sub-agents, hooks, MCP servers — which are empty today; use it when this repo starts shipping those.
 
 > **What's actually shipped today** lives in [`CONTENT.md`](./CONTENT.md) — the live inventory of skills, sub-agents, MCP servers, and hooks the `core` plugin contributes.
 > **How to add new artifacts** (decision framework, schemas, examples) lives in [`INSTRUCTION.md`](./INSTRUCTION.md).
@@ -16,6 +16,21 @@ Both marketplaces point to the same plugin directory: `plugins/core/`. So every 
 ---
 
 ## Quick install
+
+### Skills — via skills.sh (recommended)
+
+On any machine with `node`/`npm`:
+
+```bash
+npx skills add zhuconv/viberesearch -g    # user scope: skills available everywhere
+npx skills add zhuconv/viberesearch       # or: current project only
+```
+
+The [`skills` CLI](https://github.com/vercel-labs/skills) detects the coding agents installed on the machine (Claude Code, Codex, Cursor, Copilot, …) and links every skill into each agent's own skills directory (`~/.claude/skills/`, `~/.codex/skills/`, …) — no marketplace registration, no per-CLI adaptation. Re-run the same command any time to refresh to the latest `master`. Browse the repo's listing at [skills.sh](https://www.skills.sh) once indexed.
+
+> **Pick one route per machine.** If you also install the `core` plugin below, the same skills load twice — once from the plugin, once from the agent's skills directory.
+
+### Full environment — plugin marketplaces + bootstrap
 
 On any machine with `git`, `node`, and `npm`:
 
@@ -86,30 +101,27 @@ viberesearch/
 ├── bin/
 │   └── viberesearch.mjs              # Bootstrap: wires Claude + Codex on a fresh machine
 ├── .claude-plugin/
-│   └── marketplace.json              # Marketplace manifest consumed by Claude Code
+│   ├── marketplace.json              # Marketplace manifest consumed by Claude Code
+│   └── plugin.json                   # `core` plugin manifest (Claude Code variant)
+├── .codex-plugin/
+│   └── plugin.json                   # `core` plugin manifest (Codex variant)
 ├── .agents/
 │   └── plugins/
 │       └── marketplace.json          # Marketplace manifest consumed by Codex
+├── .mcp.json                         # MCP server registrations (shared)
+├── skills/                           # Skills (shared) — canonical skills.sh layout
+├── agents/                           # Sub-agents (Claude Code only) — see CONTENT.md
+├── hooks/
+│   └── hooks.json                    # Lifecycle hooks (Claude Code only); empty by default
+├── scripts/
+│   └── doctor.sh                     # Pre-push validator
 ├── README.md                         # This file — structure + authoring grammar
-├── CONTENT.md                        # Live inventory of what the `core` plugin ships
+├── CONTENT.md                        # Live inventory of what this repo ships
 ├── INSTRUCTION.md                    # Authoring guide: when to add what
-├── .gitignore                        # Ignores node_modules, .env, .DS_Store, *.log
-└── plugins/
-    └── core/                         # The single plugin both marketplaces expose
-        ├── .claude-plugin/
-        │   └── plugin.json           # Plugin manifest (Claude Code variant)
-        ├── .codex-plugin/
-        │   └── plugin.json           # Plugin manifest (Codex variant)
-        ├── .mcp.json                 # MCP server registrations (shared)
-        ├── skills/                   # Auto-invoked skills (shared) — see CONTENT.md
-        ├── agents/                   # Sub-agents (Claude Code only) — see CONTENT.md
-        ├── hooks/
-        │   └── hooks.json            # Lifecycle hooks (Claude Code only); empty by default
-        └── scripts/
-            └── doctor.sh             # Pre-push validator
+└── .gitignore                        # Ignores node_modules, .env, .DS_Store, *.log
 ```
 
-The top-level files are **marketplace-level** — they describe a catalog of plugins. Everything inside `plugins/core/` is **plugin-level** — it describes one installable unit.
+The repo root **is** the `core` plugin: both marketplace manifests declare `"./"` as the plugin source, so skills, agents, hooks, and `.mcp.json` are auto-discovered from the top-level directories. The `skills` CLI reads the same top-level `skills/` — one location, every install route.
 
 ### Mental model: three layers
 
@@ -117,7 +129,7 @@ When something looks broken, ask which of these three layers it lives in.
 
 1. **Marketplace manifest** — `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`. These are catalogs. Each lists the plugins this repo exposes and where to find them. The two files exist because Claude Code and Codex use slightly different schemas. Adding a new plugin means editing both.
 
-2. **Plugin manifest** — `plugins/core/.claude-plugin/plugin.json` and `plugins/core/.codex-plugin/plugin.json`. These declare a single plugin's metadata. Skills, agents, hooks, and MCP servers are auto-discovered by convention from the sibling directories — the manifest itself only carries metadata, not paths.
+2. **Plugin manifest** — `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` (the repo root is the plugin root). These declare a single plugin's metadata. Skills, agents, hooks, and MCP servers are auto-discovered by convention from the sibling directories — the manifest itself only carries metadata, not paths.
 
 3. **Artifacts** — the actual content the model uses at runtime: `skills/<name>/SKILL.md`, `agents/<name>.md`, `hooks/hooks.json`, and the entries in `.mcp.json`. This is what you'll touch most often. Their current contents are catalogued in [`CONTENT.md`](./CONTENT.md).
 
@@ -141,14 +153,14 @@ The short version, by intent:
 
 | You want to…                                       | Add a…       | Lives at                                                            |
 | -------------------------------------------------- | ------------ | ------------------------------------------------------------------- |
-| Give the agent a reusable workflow                 | Skill        | `plugins/core/skills/<name>/SKILL.md`                               |
-| Dispatch a specialist with its own context         | Sub-agent    | `plugins/core/agents/<name>.md`                                     |
-| Enforce a deterministic lifecycle rule             | Hook         | `plugins/core/hooks/hooks.json`                                     |
-| Provide a deterministic CLI / utility              | Script       | `plugins/core/scripts/<name>.sh` or `bin/<name>.mjs`                |
-| Connect to an external system / API                | MCP server   | `plugins/core/.mcp.json`                                            |
+| Give the agent a reusable workflow                 | Skill        | `skills/<name>/SKILL.md`                               |
+| Dispatch a specialist with its own context         | Sub-agent    | `agents/<name>.md`                                     |
+| Enforce a deterministic lifecycle rule             | Hook         | `hooks/hooks.json`                                     |
+| Provide a deterministic CLI / utility              | Script       | `scripts/<name>.sh` or `bin/<name>.mjs`                |
+| Connect to an external system / API                | MCP server   | `.mcp.json`                                            |
 | Carve a different audience or risk profile         | New plugin   | `plugins/<new-plugin>/` + register in both `marketplace.json` files |
 
-After any change: update [`CONTENT.md`](./CONTENT.md) to reflect the new artifact, run `bash plugins/core/scripts/doctor.sh`, then `/reload-plugins` inside Claude Code (or restart Codex).
+After any change: update [`CONTENT.md`](./CONTENT.md) to reflect the new artifact, run `bash scripts/doctor.sh`, then `/reload-plugins` inside Claude Code (or restart Codex).
 
 ---
 
@@ -157,7 +169,7 @@ After any change: update [`CONTENT.md`](./CONTENT.md) to reflect the new artifac
 - **Be specific in skill descriptions.** "Reviews code" loses to "Reviews the recent git diff for correctness, hidden assumptions, and reproducibility issues." The model routes on these strings.
 - **Read current code, don't bake constants.** A skill that says "the loss is MSE" goes stale; one that says "open `train.py` and report the loss function" stays correct.
 - **Never commit secrets.** Tokens go in `.env` (gitignored) or 1Password; `.mcp.json` only ever holds `${VAR}` placeholders. CONTENT.md lists which env vars each MCP server needs.
-- **Run `bash plugins/core/scripts/doctor.sh` before pushing.** It catches most of the structural mistakes that would only surface inside the CLI.
+- **Run `bash scripts/doctor.sh` before pushing.** It catches most of the structural mistakes that would only surface inside the CLI.
 - **One skill, one job.** If a skill description starts to grow conjunctions ("and also..."), split it. The router picks one skill at a time.
 
 ---
@@ -167,16 +179,16 @@ After any change: update [`CONTENT.md`](./CONTENT.md) to reflect the new artifac
 Before pushing or filing a bug:
 
 ```bash
-bash plugins/core/scripts/doctor.sh
+bash scripts/doctor.sh
 ```
 
 It checks that:
 
 - `package.json` exists and parses as JSON.
 - Both marketplace manifests exist and parse.
-- Both plugin manifests inside `core` exist and parse.
+- Both plugin manifests (`.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`) exist and parse.
 - `.mcp.json` and `hooks/hooks.json` exist and parse.
-- Every `skills/*/SKILL.md` exists.
+- Every `skills/*/SKILL.md` exists, and at least one skill is present.
 
 It does not validate frontmatter inside `SKILL.md` or `agents/*.md` — those errors only show up when the CLI tries to load them. So after a structural pass, also re-run:
 
@@ -189,6 +201,8 @@ from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-re
 ---
 
 ## Troubleshooting
+
+**Skill appears twice in `/skills`.** Both install routes are active on this machine: the `core` plugin and the standalone skills from `npx skills add`. Remove one — `claude plugin uninstall core@viberesearch`, or delete the duplicates from `~/.claude/skills/` (they're symlinks created by the `skills` CLI).
 
 **Skill not appearing in `/skills`.** Check the YAML frontmatter — it must start with `---` on the first line, end with `---`, and contain at least `name:` and `description:`. The directory name and `name:` should match. After fixing, run `/reload-plugins`.
 

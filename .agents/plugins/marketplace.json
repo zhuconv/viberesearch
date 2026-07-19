@@ -8,7 +8,7 @@
       "name": "core",
       "source": {
         "source": "local",
-        "path": "./plugins/core"
+        "path": "./"
       },
       "policy": {
         "installation": "AVAILABLE",

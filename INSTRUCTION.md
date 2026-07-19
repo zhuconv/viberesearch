@@ -51,7 +51,7 @@ If you need a behaviour that must work in both CLIs, prefer **skills + MCP serve
 
 **When to choose it.** You catch yourself re-typing the same set of instructions ("when reviewing code, check correctness, then reproducibility, then…"). The model already knows how to do the underlying work; you just want it to follow your procedure when the right kind of task shows up.
 
-**Where it lives.** `plugins/core/skills/<skill-name>/SKILL.md`. Directory name and frontmatter `name` must match.
+**Where it lives.** `skills/<skill-name>/SKILL.md`. Directory name and frontmatter `name` must match.
 
 **Minimum schema:**
 
@@ -64,7 +64,7 @@ description: <one sentence describing exactly when this skill should be invoked>
 <the procedure — bullet list, numbered steps, or checklist>
 ```
 
-**Example** — `plugins/core/skills/dataset-card/SKILL.md`:
+**Example** — `skills/dataset-card/SKILL.md`:
 
 ```md
 ---
@@ -92,7 +92,7 @@ Return a single Markdown file ready to drop into the repo.
 
 **When to choose it.** The sub-task needs its own conversation context (separate token budget, no pollution from the parent), its own persona ("be skeptical / be terse"), or restricted tools. Typical: code review, deep research, large-output generation that you don't want bloating the parent.
 
-**Where it lives.** `plugins/core/agents/<agent-name>.md`. Claude Code only — Codex does not consume this directory.
+**Where it lives.** `agents/<agent-name>.md`. Claude Code only — Codex does not consume this directory.
 
 **Minimum schema:**
 
@@ -108,7 +108,7 @@ maxTurns: 20
 <the system prompt for this agent — persona, priorities, output format>
 ```
 
-**Example** — `plugins/core/agents/literature-scout.md`:
+**Example** — `agents/literature-scout.md`:
 
 ```md
 ---
@@ -134,7 +134,7 @@ Return a markdown table plus a short narrative on what is missing.
 
 **When to choose it.** You need a guarantee, not a request. Examples: "log every shell command before it runs", "block writes to `.env`", "format on save". The LLM forgetting is not an option.
 
-**Where it lives.** `plugins/core/hooks/hooks.json`. Claude Code only.
+**Where it lives.** `hooks/hooks.json`. Claude Code only.
 
 **Lifecycle events.** `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, `SubagentStop`, `Notification`. The harness — not the model — runs the configured shell command at the matching event.
 
@@ -184,7 +184,7 @@ Return a markdown table plus a short narrative on what is missing.
 
 There are two homes, depending on who runs it:
 
-### 4a. Plugin-internal script — `plugins/core/scripts/<name>.sh`
+### 4a. Plugin-internal script — `scripts/<name>.sh`
 
 Run by the plugin author or the agent during a session. Examples: `doctor.sh` (already present), data prep, repo bootstraps, validators.
 
@@ -204,7 +204,7 @@ cd "$ROOT"
 echo "ok"
 ```
 
-**Verify.** Run it directly: `bash plugins/core/scripts/<name>.sh`.
+**Verify.** Run it directly: `bash scripts/<name>.sh`.
 
 ### 4b. Top-level npm bin — `bin/<name>.mjs`
 
@@ -229,7 +229,7 @@ To register a new bin, add it to `package.json`:
 
 **When to choose it.** You want to give the agent a *new tool* it can call — something outside Bash + file editing. GitHub API, vector memory, browser, database, internal services.
 
-**Where it lives.** `plugins/core/.mcp.json`, under `mcpServers`. Both Claude Code and Codex read this.
+**Where it lives.** `.mcp.json`, under `mcpServers`. Both Claude Code and Codex read this.
 
 **Two common shapes.**
 
@@ -285,7 +285,7 @@ To register a new bin, add it to `package.json`:
 
 ## 6. Plugin — the existing bundle
 
-The `core` plugin (under `plugins/core/`) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to `core` directly** using the sections above. You don't create a new plugin for every new skill.
+The `core` plugin (rooted at the top level of this repo) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to `core` directly** using the sections above. You don't create a new plugin for every new skill.
 
 You're touching the right files when:
 - you want one `claude plugin install core@viberesearch --scope user` to keep delivering more capability over time,
@@ -306,24 +306,24 @@ You're touching the right files when:
 
 **How to add one:**
 
-1. Copy the existing plugin as a starting point:
+1. Create the plugin directory, mirroring the root layout (the `core` plugin lives at the repo root; additional plugins live under `plugins/`):
    ```bash
-   cp -r plugins/core plugins/<new-plugin>
+   mkdir -p plugins/<new-plugin>/.claude-plugin plugins/<new-plugin>/.codex-plugin plugins/<new-plugin>/skills
    ```
-2. Update both manifests inside the new directory:
+2. Write both manifests inside the new directory, using the root `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` as templates:
    - `plugins/<new-plugin>/.claude-plugin/plugin.json` — change `name` and `description`.
    - `plugins/<new-plugin>/.codex-plugin/plugin.json` — same.
 3. Register it in **both** marketplace files at the repo root:
-   - `.claude-plugin/marketplace.json` — append a new object to `plugins[]`.
-   - `.agents/plugins/marketplace.json` — append a matching entry under `plugins[]`.
-4. Run `bash plugins/<new-plugin>/scripts/doctor.sh` (copy/adapt `doctor.sh` first if you removed it).
+   - `.claude-plugin/marketplace.json` — append a new object to `plugins[]` with `"source": "./plugins/<new-plugin>"`.
+   - `.agents/plugins/marketplace.json` — append a matching entry under `plugins[]` with `"path": "./plugins/<new-plugin>"`.
+4. Extend `scripts/doctor.sh` so it also checks the new plugin's manifests and skills.
 5. Install it from inside the CLIs:
    ```bash
    claude plugin install <new-plugin>@viberesearch --scope user
    ```
 
 **Anti-patterns.**
-- Don't fork a plugin just to add one skill — that's a `plugins/core/skills/<name>/` change.
+- Don't fork a plugin just to add one skill — that's a `skills/<name>/` change.
 - Don't forget to register in **both** marketplace files. Forgetting one half means it works in one CLI and silently doesn't in the other.
 
 ---
@@ -332,10 +332,10 @@ You're touching the right files when:
 
 In this order:
 
-1. **Validate structure:** `bash plugins/core/scripts/doctor.sh` — JSON parses, required files exist.
+1. **Validate structure:** `bash scripts/doctor.sh` — JSON parses, required files exist.
 2. **Reload Claude Code:** `/reload-plugins`. (Codex requires a session restart.)
 3. **Smoke-test the artifact:** see the per-section "Verify" block above.
-4. **Commit.** Plugins are versioned by git ref, so users on `npx --yes github:zhuconv/viberesearch` pick up `HEAD` of `master` on their next bootstrap; users who installed via `claude plugin install` need `claude plugin marketplace update viberesearch` to refresh.
+4. **Commit and push.** Plugins are versioned by git ref, so users on `npx --yes github:zhuconv/viberesearch` pick up `HEAD` of `master` on their next bootstrap; users who installed via `claude plugin install` need `claude plugin marketplace update viberesearch` to refresh; users who installed skills via `npx skills add zhuconv/viberesearch` re-run that same command to refresh.
 
 If `doctor.sh` doesn't catch a class of mistake you just ran into, extend it — that's the right place for repo-wide invariants.
 
@@ -346,18 +346,17 @@ If `doctor.sh` doesn't catch a class of mistake you just ran into, extend it —
 ```text
 viberesearch/
 ├── bin/<name>.mjs                       # 4b. top-level npx bin
-├── .claude-plugin/marketplace.json      # 7. register new plugins (Claude side)
-├── .agents/plugins/marketplace.json     # 7. register new plugins (Codex side)
-└── plugins/
-    ├── core/                            # 6. the existing plugin
-    │   ├── .claude-plugin/plugin.json
-    │   ├── .codex-plugin/plugin.json
-    │   ├── .mcp.json                    # 5. MCP servers
-    │   ├── hooks/hooks.json             # 3. hooks (Claude only)
-    │   ├── agents/<name>.md             # 2. sub-agents (Claude only)
-    │   ├── skills/<name>/SKILL.md       # 1. skills
-    │   └── scripts/<name>.sh            # 4a. plugin-internal scripts
-    └── <new-plugin>/                    # 7. new plugin lives here
+├── .claude-plugin/
+│   ├── marketplace.json                 # 7. register plugins (Claude side)
+│   └── plugin.json                      # 6. `core` plugin manifest (Claude)
+├── .codex-plugin/plugin.json            # 6. `core` plugin manifest (Codex)
+├── .agents/plugins/marketplace.json     # 7. register plugins (Codex side)
+├── .mcp.json                            # 5. MCP servers
+├── hooks/hooks.json                     # 3. hooks (Claude only)
+├── agents/<name>.md                     # 2. sub-agents (Claude only)
+├── skills/<name>/SKILL.md               # 1. skills — also what `npx skills add` installs
+├── scripts/<name>.sh                    # 4a. repo scripts
+└── plugins/<new-plugin>/                # 7. additional plugins live here
 ```
 
-If a category of artifact you want to add isn't listed here (slash commands, statusline scripts, output styles, etc.), it follows the same pattern: a directory under `plugins/core/`, referenced from `plugins/core/.claude-plugin/plugin.json`. Check the Claude Code plugin docs for exact key names.
+If a category of artifact you want to add isn't listed here (slash commands, statusline scripts, output styles, etc.), it follows the same pattern: a directory at the repo root, auto-discovered relative to `.claude-plugin/plugin.json`. Check the Claude Code plugin docs for exact key names.

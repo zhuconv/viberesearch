@@ -17,7 +17,7 @@ python3 "$SCRIPT" input.svg output.png
 ```
 
 If working from the viberesearch repository itself, use
-`plugins/core/skills/svg-to-png-render/scripts/render_svg_png.py` directly.
+`skills/svg-to-png-render/scripts/render_svg_png.py` directly.
 
 The script:
 

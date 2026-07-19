@@ -2,6 +2,9 @@
   "name": "core",
   "description": "Viberesearch core: Claude Code skills, agents, hooks, MCP configs, and workflow utilities.",
   "version": "0.1.0",
+  "author": {
+    "name": "zhuconv"
+  },
   "repository": "https://github.com/zhuconv/viberesearch",
   "license": "MIT"
 }
