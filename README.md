@@ -226,20 +226,27 @@ from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-re
 Skills we didn't write aren't vendored or aliased here — installing them directly from the source keeps you on exactly what the author ships, with no drift or duplicate-maintenance burden on this repo.
 
 - **[Matt Pocock's skills](https://github.com/mattpocock/skills)** — grilling, spec/ticket flows, TDD, code review, domain modelling.
-  - Claude Code (his curated set only, no drafts/deprecated — a native plugin, exactly like this repo's):
+
+  `-y` means fully unattended: it skips every prompt, including the group picker, and just installs everything discovered. There is no flag to select a group non-interactively — `--skill` only matches individual skill names, not group/plugin names — so "unattended" and "curated (no drafts)" don't fit in one line the same way. Pick by what you want:
+
+  - **Curated, unattended, one command each (recommended)** — his `skills/` splits into buckets; `engineering/` + `productivity/` are the ones he promotes (verified: 17 + 5 = his plugin's exact 22-skill curated list, same as the Claude plugin below). Run both:
+    ```bash
+    npx skills add mattpocock/skills/skills/engineering -y
+    npx skills add mattpocock/skills/skills/productivity -y
+    ```
+  - **Curated, by hand** — drop `-y` so the group picker appears, then **toggle on "Mattpocock Skills", leave "Other" unchecked**, and confirm:
+    ```bash
+    npx skills add mattpocock/skills
+    ```
+  - **Everything, unattended** — also pulls his `deprecated/`, `in-progress/`, `personal/`, `misc/` buckets (41 skills total, not curated):
+    ```bash
+    npx skills add mattpocock/skills -y
+    ```
+  - **Claude Code plugin** — a native subscription, always exactly his curated 22, updates when he bumps his version:
     ```bash
     claude plugin marketplace add mattpocock/skills
     claude plugin install mattpocock-skills@mattpocock
     ```
-  - Any other agent, via skills.sh — pick one:
-    ```bash
-    # Everything in his repo, including drafts/deprecated/personal buckets (41 skills):
-    npx skills add mattpocock/skills -y
-
-    # Just his curated engineering bucket, no drafts (17 skills; skip the interactive picker):
-    npx skills add mattpocock/skills/skills/engineering -y
-    ```
-    His curated set (matching the Claude plugin) spans two bucket directories (`engineering/` + `productivity/`), which the `skills` CLI can't select in one non-interactive command — drop `-y` to get the interactive picker and toggle the "Mattpocock Skills" group, or run both subpath commands above back to back.
 
 ---
 
