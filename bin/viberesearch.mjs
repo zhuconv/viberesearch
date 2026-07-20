@@ -16,7 +16,7 @@ function run(cmd, args, opts = {}) {
 
 const repo = "zhuconv/viberesearch";
 const marketplace = "viberesearch";
-const claudePlugins = ["report", "research"];
+const claudePlugins = ["engineer"];
 
 console.log("Equipping viberesearch environment...");
 

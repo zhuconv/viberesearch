@@ -4,41 +4,20 @@
     "name": "zhuconv"
   },
   "metadata": {
-    "description": "Personal skills + plugin bundle for vibe research/coding, in two sets: report (decks, figures) and research (plan grilling). Install skills via `npx skills add zhuconv/viberesearch`."
+    "description": "Personal skills for vibe research/coding, organized into sets by directory (currently: engineer). Install via `npx skills add zhuconv/viberesearch`."
   },
   "plugins": [
     {
-      "name": "report",
+      "name": "engineer",
       "source": "./",
       "strict": false,
-      "description": "Report set: authoring Slidev decks and rendering SVG diagrams to PNG for docs and presentations.",
+      "description": "Engineer set: authoring Slidev decks and rendering SVG diagrams to PNG for docs and presentations.",
       "category": "productivity",
       "skills": [
-        "./skills/report/slidev-deck",
-        "./skills/report/svg-to-png-render"
+        "./skills/engineer/slidev-deck",
+        "./skills/engineer/svg-to-png-render"
       ],
-      "version": "0.3.0"
-    },
-    {
-      "name": "research",
-      "source": "./",
-      "strict": false,
-      "description": "Research set: grilling workflows that stress-test plans and designs, with optional docs/ADR updates.",
-      "category": "productivity",
-      "skills": [
-        "./skills/research/grill-me",
-        "./skills/research/grill-with-docs"
-      ],
-      "version": "0.3.0"
-    },
-    {
-      "name": "engineering",
-      "source": {
-        "source": "github",
-        "repo": "mattpocock/skills"
-      },
-      "description": "Engineering set: alias of Matt Pocock's promoted skills (mattpocock/skills) — grilling, spec/ticket flows, TDD, code review, domain modelling. Content is maintained upstream.",
-      "category": "engineering"
+      "version": "0.5.0"
     }
   ]
 }

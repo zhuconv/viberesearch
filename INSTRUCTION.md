@@ -51,7 +51,7 @@ If you need a behaviour that must work in both CLIs, prefer **skills + MCP serve
 
 **When to choose it.** You catch yourself re-typing the same set of instructions ("when reviewing code, check correctness, then reproducibility, then…"). The model already knows how to do the underlying work; you just want it to follow your procedure when the right kind of task shows up.
 
-**Where it lives.** `skills/<set>/<skill-name>/SKILL.md`, where `<set>` is `report` or `research`. Directory name and frontmatter `name` must match. After creating the skill, **claim it** by appending its path to the matching set entry's `skills` array in `.claude-plugin/marketplace.json` — Claude Code and the skills.sh set grouping both read that array (unclaimed skills are invisible to the Claude plugin and show under "Other" in `npx skills add`). Codex needs no registration; the `npx skills add` route discovers the catalog on its own. `scripts/doctor.sh` fails if disk and claims drift.
+**Where it lives.** `skills/<set>/<skill-name>/SKILL.md` — `<set>` is `engineer` today; only add a new set directory (e.g. `research`) when there's an original skill to put in it, never for vendored/adapted content (see the anti-pattern below). Directory name and frontmatter `name` must match. After creating the skill, **claim it** by appending its path to the matching set entry's `skills` array in `.claude-plugin/marketplace.json` — Claude Code and the skills.sh set grouping both read that array (unclaimed skills are invisible to the Claude plugin and show under "Other" in `npx skills add`). Codex needs no registration; the `npx skills add` route discovers the catalog on its own. `scripts/doctor.sh` fails if disk and claims drift.
 
 **Minimum schema:**
 
@@ -84,7 +84,7 @@ Return a single Markdown file ready to drop into the repo.
 
 **Verify.** Inside Claude Code: `/reload-plugins` then `/skills` — your skill should be listed. Skills are **auto-invoked** when the description matches user intent; there is no `/dataset-card` command unless you also add one.
 
-**Anti-patterns.** A skill description like "for code tasks" routes to nothing because everything is a code task. Be specific about the trigger.
+**Anti-patterns.** A skill description like "for code tasks" routes to nothing because everything is a code task. Be specific about the trigger. Don't vendor or adapt someone else's skill into this repo just to get it under our install routes — point people at the upstream repo directly (README's "Useful content from elsewhere"). A copy drifts the moment the author updates theirs, and now there are two things to maintain.
 
 ---
 
@@ -288,7 +288,7 @@ To register a new bin, add it to `package.json`:
 The repo root (with its set entries in `marketplace.json`) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to an existing set directly** using the sections above. You don't create a new plugin for every new skill.
 
 You're touching the right files when:
-- you want the installed set plugins (`report@viberesearch`, `research@viberesearch`) and the `npx skills add` route to keep delivering more capability over time,
+- you want the installed set plugins (currently `engineer@viberesearch`) and the `npx skills add` route to keep delivering more capability over time,
 - the artifact serves the same workflow as the rest (research / coding loops),
 - it doesn't introduce dependencies or risks the rest of the repo doesn't already accept.
 
@@ -347,7 +347,7 @@ viberesearch/
 ├── .mcp.json                            # 5. MCP servers (Claude plugin route)
 ├── hooks/hooks.json                     # 3. hooks (Claude only)
 ├── agents/<name>.md                     # 2. sub-agents (Claude only)
-├── skills/<set>/<name>/SKILL.md         # 1. skills (sets: report, research) — also what `npx skills add` installs
+├── skills/<set>/<name>/SKILL.md         # 1. skills (sets: engineer) — also what `npx skills add` installs
 ├── scripts/<name>.sh                    # 4a. repo scripts
 └── plugins/<new-plugin>/                # 7. additional plugins live here
 ```
