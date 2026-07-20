@@ -50,10 +50,10 @@ if (has("claude")) {
 
 if (has("codex")) {
   console.log("\nConfiguring Codex (skills installed via the skills CLI)...");
-  run("npx", ["-y", "skills", "add", repo, "-g", "-a", "codex", "--all", "-y"], { allowFail: true });
+  run("npx", ["-y", "skills", "add", repo, "-g", "-a", "codex", "-y", "--skill", "*"], { allowFail: true });
 
   console.log(`
-Codex skills installed to ~/.codex/skills.
+Codex skills installed to ~/.agents/skills (the shared agent-skills directory Codex reads).
 
 Start a new Codex session so it picks them up. Re-run this bootstrap any time to refresh.
 `);
