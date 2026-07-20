@@ -17,7 +17,6 @@ function run(cmd, args, opts = {}) {
 const repo = "zhuconv/viberesearch";
 const marketplace = "viberesearch";
 const claudePlugins = ["report", "research"];
-const codexPlugin = "core";
 
 console.log("Equipping viberesearch environment...");
 
@@ -50,16 +49,13 @@ if (has("claude")) {
 }
 
 if (has("codex")) {
-  console.log("\nConfiguring Codex...");
-  run("codex", ["plugin", "marketplace", "add", repo], { allowFail: true });
-  run("codex", ["plugin", "marketplace", "upgrade", marketplace], { allowFail: true });
-  run("codex", ["plugin", "add", `${codexPlugin}@${marketplace}`]);
-  run("codex", ["plugin", "list"], { allowFail: true });
+  console.log("\nConfiguring Codex (skills installed via the skills CLI)...");
+  run("npx", ["-y", "skills", "add", repo, "-g", "-a", "codex", "--all", "-y"], { allowFail: true });
 
   console.log(`
-Codex marketplace and plugin have been installed.
+Codex skills installed to ~/.codex/skills.
 
-Start a new Codex session so it picks up the plugin's skills and tools.
+Start a new Codex session so it picks them up. Re-run this bootstrap any time to refresh.
 `);
 } else {
   console.log("\nCodex CLI not found; skipping Codex setup.");
@@ -85,6 +81,5 @@ Claude Code verification:
 
 Codex verification:
   codex
-  /plugins
   /skills
 `);

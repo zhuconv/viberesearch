@@ -1,9 +1,0 @@
-{
-  "name": "core",
-  "version": "0.3.0",
-  "description": "Viberesearch core: all skill sets (report + research) for Codex, plus MCP configs.",
-  "repository": "https://github.com/zhuconv/viberesearch",
-  "license": "MIT",
-  "skills": "./skills/",
-  "mcpServers": "./.mcp.json"
-}

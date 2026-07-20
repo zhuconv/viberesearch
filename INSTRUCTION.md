@@ -1,6 +1,6 @@
 # INSTRUCTION — when to add what to viberesearch
 
-This guide tells you, given a thing you want your dev environment to do, **which kind of viberesearch tool to build for it**: a skill, a sub-agent, a hook, a script, an MCP server, the existing `core` plugin, or a brand-new plugin.
+This guide tells you, given a thing you want your dev environment to do, **which kind of viberesearch tool to build for it**: a skill, a sub-agent, a hook, a script, an MCP server, an existing set, or a brand-new plugin.
 
 Read the [decision framework](#decision-framework) first. Then jump to the matching section for schema, examples, and how to verify it loaded.
 
@@ -38,7 +38,7 @@ Not every artifact type is consumed by every CLI. Author once, but know who pick
 | ----------------- | ----------- | ----- | --------------------------------------------------------------------------- |
 | Skill             | yes         | yes   | Auto-invoked by description match. Same `SKILL.md` works in both.           |
 | Sub-agent         | yes         | no    | Codex doesn't read `agents/`. Skip or recreate behaviour as a skill.        |
-| MCP server        | yes         | yes   | Both read `.mcp.json`. Some MCPs are CLI-specific — test in each.           |
+| MCP server        | yes         | no    | Only the Claude plugin route ships `.mcp.json`. Register Codex MCPs via `codex mcp`. |
 | Hook              | yes         | no    | Codex has no equivalent today. Don't rely on hooks for cross-CLI behaviour. |
 | Script (`scripts/`) | yes         | yes   | Just files. Either CLI can call them via Bash.                              |
 | Bin (`bin/`)      | n/a         | n/a   | Top-level npm bin, invoked via `npx`. Independent of either CLI.            |
@@ -51,7 +51,7 @@ If you need a behaviour that must work in both CLIs, prefer **skills + MCP serve
 
 **When to choose it.** You catch yourself re-typing the same set of instructions ("when reviewing code, check correctness, then reproducibility, then…"). The model already knows how to do the underlying work; you just want it to follow your procedure when the right kind of task shows up.
 
-**Where it lives.** `skills/<set>/<skill-name>/SKILL.md`, where `<set>` is `report` or `research`. Directory name and frontmatter `name` must match. After creating the skill, **claim it** by appending its path to the matching set entry's `skills` array in `.claude-plugin/marketplace.json` — Claude Code and the skills.sh set grouping both read that array (unclaimed skills are invisible to the Claude plugin and show under "Other" in `npx skills add`). Codex needs no registration; it scans `./skills/` recursively. `scripts/doctor.sh` fails if disk and claims drift.
+**Where it lives.** `skills/<set>/<skill-name>/SKILL.md`, where `<set>` is `report` or `research`. Directory name and frontmatter `name` must match. After creating the skill, **claim it** by appending its path to the matching set entry's `skills` array in `.claude-plugin/marketplace.json` — Claude Code and the skills.sh set grouping both read that array (unclaimed skills are invisible to the Claude plugin and show under "Other" in `npx skills add`). Codex needs no registration; the `npx skills add` route discovers the catalog on its own. `scripts/doctor.sh` fails if disk and claims drift.
 
 **Minimum schema:**
 
@@ -229,7 +229,7 @@ To register a new bin, add it to `package.json`:
 
 **When to choose it.** You want to give the agent a *new tool* it can call — something outside Bash + file editing. GitHub API, vector memory, browser, database, internal services.
 
-**Where it lives.** `.mcp.json`, under `mcpServers`. Both Claude Code and Codex read this.
+**Where it lives.** `.mcp.json`, under `mcpServers`. Only the Claude plugin route ships this.
 
 **Two common shapes.**
 
@@ -275,7 +275,7 @@ To register a new bin, add it to `package.json`:
 }
 ```
 
-**Verify.** Claude: `/reload-plugins`, then `/mcp` — the server should appear, and `…` next to it should show available tools. Codex: restart and check `/mcp`. If a server is unhealthy, run its `command` directly in a shell and read the real error.
+**Verify.** Claude: `/reload-plugins`, then `/mcp` — the server should appear, and `…` next to it should show available tools. If a server is unhealthy, run its `command` directly in a shell and read the real error.
 
 **Anti-patterns.**
 - Never commit a literal token. Always `${VAR_NAME}` and document the var in the README.
@@ -285,12 +285,12 @@ To register a new bin, add it to `package.json`:
 
 ## 6. Plugin — the existing bundle
 
-The `core` plugin (rooted at the top level of this repo) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to `core` directly** using the sections above. You don't create a new plugin for every new skill.
+The repo root (with its set entries in `marketplace.json`) is itself the answer to "I want skills + agents + hooks + MCP + scripts shipped together." If your new artifact fits the same audience, permission boundary, and release cadence as what's already there, **add it to an existing set directly** using the sections above. You don't create a new plugin for every new skill.
 
 You're touching the right files when:
-- you want the installed set plugins (`report@viberesearch`, `research@viberesearch` on Claude; `core@viberesearch` on Codex) to keep delivering more capability over time,
+- you want the installed set plugins (`report@viberesearch`, `research@viberesearch`) and the `npx skills add` route to keep delivering more capability over time,
 - the artifact serves the same workflow as the rest (research / coding loops),
-- it doesn't introduce dependencies or risks the rest of `core` doesn't already accept.
+- it doesn't introduce dependencies or risks the rest of the repo doesn't already accept.
 
 ---
 
@@ -308,14 +308,11 @@ You're touching the right files when:
 
 1. First consider whether a new **set** is enough (a `strict: false` entry in `.claude-plugin/marketplace.json` claiming skills — no new directory tree). A separate plugin directory is only needed for non-skill artifacts with a different risk profile. If so, create it under `plugins/`:
    ```bash
-   mkdir -p plugins/<new-plugin>/.claude-plugin plugins/<new-plugin>/.codex-plugin plugins/<new-plugin>/skills
+   mkdir -p plugins/<new-plugin>/.claude-plugin plugins/<new-plugin>/skills
    ```
-2. Write both manifests inside the new directory, using the root `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` as templates:
+2. Write the manifest inside the new directory:
    - `plugins/<new-plugin>/.claude-plugin/plugin.json` — change `name` and `description`.
-   - `plugins/<new-plugin>/.codex-plugin/plugin.json` — same.
-3. Register it in **both** marketplace files at the repo root:
-   - `.claude-plugin/marketplace.json` — append a new object to `plugins[]` with `"source": "./plugins/<new-plugin>"`.
-   - `.agents/plugins/marketplace.json` — append a matching entry under `plugins[]` with `"path": "./plugins/<new-plugin>"`.
+3. Register it in `.claude-plugin/marketplace.json` at the repo root: append a new object to `plugins[]` with `"source": "./plugins/<new-plugin>"`.
 4. Extend `scripts/doctor.sh` so it also checks the new plugin's manifests and skills.
 5. Install it from inside the CLIs:
    ```bash
@@ -324,7 +321,6 @@ You're touching the right files when:
 
 **Anti-patterns.**
 - Don't fork a plugin just to add one skill — that's a `skills/<set>/<name>/` change plus a claim in the set's `marketplace.json` entry. A new *set* is also cheap: a new `skills/<set>/` directory plus a new `strict: false` entry in `.claude-plugin/marketplace.json` claiming its skills.
-- Don't forget to register in **both** marketplace files. Forgetting one half means it works in one CLI and silently doesn't in the other.
 
 ---
 
@@ -333,7 +329,7 @@ You're touching the right files when:
 In this order:
 
 1. **Validate structure:** `bash scripts/doctor.sh` — JSON parses, required files exist.
-2. **Reload Claude Code:** `/reload-plugins`. (Codex requires a session restart.)
+2. **Reload Claude Code:** `/reload-plugins`. (Codex: re-run `npx skills add zhuconv/viberesearch` and start a new session.)
 3. **Smoke-test the artifact:** see the per-section "Verify" block above.
 4. **Commit and push.** Plugins are versioned by git ref, so users on `npx --yes github:zhuconv/viberesearch` pick up `HEAD` of `master` on their next bootstrap; users who installed via `claude plugin install` need `claude plugin marketplace update viberesearch` to refresh; users who installed skills via `npx skills add zhuconv/viberesearch` re-run that same command to refresh.
 
@@ -348,9 +344,7 @@ viberesearch/
 ├── bin/<name>.mjs                       # 4b. top-level npx bin
 ├── .claude-plugin/
 │   └── marketplace.json                 # 6+7. Claude marketplace; set entries claim skills inline
-├── .codex-plugin/plugin.json            # 6. `core` plugin manifest (Codex; recursive ./skills/)
-├── .agents/plugins/marketplace.json     # 7. register plugins (Codex side)
-├── .mcp.json                            # 5. MCP servers
+├── .mcp.json                            # 5. MCP servers (Claude plugin route)
 ├── hooks/hooks.json                     # 3. hooks (Claude only)
 ├── agents/<name>.md                     # 2. sub-agents (Claude only)
 ├── skills/<set>/<name>/SKILL.md         # 1. skills (sets: report, research) — also what `npx skills add` installs
@@ -358,4 +352,4 @@ viberesearch/
 └── plugins/<new-plugin>/                # 7. additional plugins live here
 ```
 
-If a category of artifact you want to add isn't listed here (slash commands, statusline scripts, output styles, etc.), it follows the same pattern: a directory at the repo root, auto-discovered relative to `.claude-plugin/plugin.json`. Check the Claude Code plugin docs for exact key names.
+If a category of artifact you want to add isn't listed here (slash commands, statusline scripts, output styles, etc.), it follows the same pattern: a directory at the repo root, referenced from the set entries in `.claude-plugin/marketplace.json`. Check the Claude Code plugin docs for exact key names.

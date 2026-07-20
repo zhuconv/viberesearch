@@ -1,6 +1,6 @@
 # CONTENT — what this repo ships
 
-Live inventory of every artifact this repo contributes to Claude Code and Codex — and of every skill `npx skills add zhuconv/viberesearch` installs. Skills are grouped into two sets, `report` and `research`; each set is a Claude plugin, and Codex ships both as one `core` plugin. README.md describes the structure and authoring grammar; this file describes the artifacts.
+Live inventory of every artifact this repo contributes to Claude Code and Codex — and of every skill `npx skills add zhuconv/viberesearch` installs. Skills are grouped into two sets, `report` and `research`; each set is a Claude plugin, and every other agent (Codex included) gets them through the `npx skills add` route. README.md describes the structure and authoring grammar; this file describes the artifacts.
 
 **Update this file every time you add or remove an artifact** — the README intentionally avoids naming specifics so that drift only ever happens here.
 
@@ -28,7 +28,7 @@ Skills load when their `description` matches user intent. There is no `/<name>` 
 
 No files in this repo. The marketplace entry's source points at [mattpocock/skills](https://github.com/mattpocock/skills); installing it delivers Matt's promoted set (grilling, spec/ticket flows, TDD, code review, domain modelling — maintained upstream). Claude route only: `claude plugin install engineering@viberesearch`. Other agents: `npx skills add mattpocock/skills/skills/engineering -y`.
 
-Both Claude Code and Codex consume `skills/`. The set a local skill belongs to is declared in `.claude-plugin/marketplace.json` (the `skills` array of the set's plugin entry) — the directory placement under `skills/<set>/` mirrors it for humans, and `scripts/doctor.sh` enforces that the two stay in sync.
+The set a local skill belongs to is declared in `.claude-plugin/marketplace.json` (the `skills` array of the set's plugin entry) — the directory placement under `skills/<set>/` mirrors it for humans, and `scripts/doctor.sh` enforces that the two stay in sync.
 
 ---
 
@@ -38,7 +38,7 @@ None shipped by default. Add to `agents/<name>.md` when a sub-task warrants its 
 
 ---
 
-## MCP servers (shared between Claude Code and Codex)
+## MCP servers (Claude Code plugin route)
 
 None registered by default. Add to `.mcp.json` when the agent needs a new tool or data source — see [`INSTRUCTION.md`](./INSTRUCTION.md) §5. Spawned MCP servers receive the live shell environment at startup; required env vars must be exported before launching the CLI.
 
@@ -72,10 +72,10 @@ None registered by default. Add to `.mcp.json` when the agent needs a new tool o
 
 ### Inside Codex
 
-After running the bootstrap (or installing manually with `codex plugin add core@viberesearch`), start a new Codex session and run:
+After running the bootstrap (or installing manually with `npx skills add zhuconv/viberesearch -g -a codex`), start a new Codex session and run:
 
 ```
-/skills           # same skill list (Codex skips agents/ and hooks/)
+/skills           # same skill list (only skills ship to Codex)
 ```
 
 ### From the shell
