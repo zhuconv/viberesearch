@@ -35,7 +35,7 @@ npx skills add zhuconv/viberesearch -g    # user scope: skills available everywh
 npx skills add zhuconv/viberesearch       # or: current project only
 ```
 
-The [`skills` CLI](https://github.com/vercel-labs/skills) detects the coding agents installed on the machine (Claude Code, Codex, Cursor, Copilot, …) and links every skill into each agent's own skills directory (`~/.claude/skills/`, `~/.codex/skills/`, …) — no marketplace registration, no per-CLI adaptation. Re-run the same command any time to refresh to the latest `master`. Browse the repo's listing at [skills.sh](https://www.skills.sh) once indexed.
+The [`skills` CLI](https://github.com/vercel-labs/skills) detects the coding agents installed on the machine (Claude Code, Codex, Cursor, Copilot, …) and links every skill into each agent's own skills directory (`~/.claude/skills/` for Claude Code, the shared `~/.agents/skills/` for Codex, …) — no marketplace registration, no per-CLI adaptation. Re-run the same command any time to refresh to the latest `master`. Browse the repo's listing at [skills.sh](https://www.skills.sh) once indexed.
 
 > **Pick one route per machine (Claude Code).** If you also install the set plugins below, the same skills load twice — once from the plugin, once from `~/.claude/skills/`.
 
@@ -220,7 +220,7 @@ from a shell that has `claude` and/or `codex` on its `PATH`. The bootstrap re-re
 
 **Sub-agent not delegated to.** The parent decides based on the `description`. If it never picks your agent, the description is too generic or overlaps with another agent. Tighten it, then `/reload-plugins`.
 
-**Codex doesn't see the skills.** Codex has no plugin route here — install with `npx skills add zhuconv/viberesearch -g -a codex`, confirm files landed in `~/.codex/skills/`, then start a new Codex session.
+**Codex doesn't see the skills.** Codex has no plugin route here — install with `npx skills add zhuconv/viberesearch -g -a codex -y --skill '*'`, confirm files landed in `~/.agents/skills/`, then start a new Codex session. Don't use `--all`: it overrides `-a` and installs to every detected agent, duplicating the Claude plugin skills.
 
 **Plugin install fails with a manifest validation error.** Run `claude plugin validate .` for the real message. The Claude set entries in `marketplace.json` rely on `strict: false` plus explicit `skills` arrays; a typo in a claimed path, or a claimed directory missing its `SKILL.md`, fails the install. `bash scripts/doctor.sh` catches path/claim mismatches before pushing.
 
