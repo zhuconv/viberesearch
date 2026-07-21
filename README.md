@@ -229,14 +229,14 @@ Skills we didn't write aren't vendored or aliased here — installing them direc
 
   `-y` means fully unattended: it skips every prompt, including the group picker, and just installs everything discovered. There is no flag to select a group non-interactively — `--skill` only matches individual skill names, not group/plugin names — so "unattended" and "curated (no drafts)" don't fit in one line the same way. Pick by what you want:
 
-  - **Curated, unattended, one command each (recommended)** — his `skills/` splits into buckets; `engineering/` + `productivity/` are the ones he promotes (verified: 17 + 5 = his plugin's exact 22-skill curated list, same as the Claude plugin below). Run both:
+  - **Curated, by hand (recommended)** — drop `-y` so the group picker appears, then **toggle on "Mattpocock Skills", leave "Other" unchecked**, and confirm:
+    ```bash
+    npx skills add mattpocock/skills
+    ```
+  - **Curated, unattended** — his `skills/` splits into buckets; `engineering/` + `productivity/` are the ones he promotes (verified: 17 + 5 = his plugin's exact 22-skill curated list). Two commands, no prompts:
     ```bash
     npx skills add mattpocock/skills/skills/engineering -y
     npx skills add mattpocock/skills/skills/productivity -y
-    ```
-  - **Curated, by hand** — drop `-y` so the group picker appears, then **toggle on "Mattpocock Skills", leave "Other" unchecked**, and confirm:
-    ```bash
-    npx skills add mattpocock/skills
     ```
   - **Everything, unattended** — also pulls his `deprecated/`, `in-progress/`, `personal/`, `misc/` buckets (41 skills total, not curated):
     ```bash
