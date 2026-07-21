@@ -1,6 +1,6 @@
 # CONTENT — what this repo ships
 
-Live inventory of every artifact this repo contributes to Claude Code and Codex — and of every skill `npx skills add zhuconv/viberesearch` installs. Only skills we wrote ourselves ship here (no vendored or aliased upstream content — see the README's "Useful content from elsewhere" for that). Skills are grouped into sets by directory; each set is a Claude plugin, and every other agent (Codex included) gets them through the `npx skills add` route. README.md describes the structure and authoring grammar; this file describes the artifacts.
+Live inventory of every artifact this repo contributes to Claude Code and Codex — and of every skill `npx skills add zhuconv/viberesearch` installs. Skills here are ours to maintain, not live aliases of someone else's repo (that pattern — a marketplace entry that just points at upstream — is what the README's "Useful content from elsewhere" is for). Where a skill started from someone else's work, its row below names the source and the exact commit it was taken from, so a later update check has something concrete to diff against. Skills are grouped into sets by directory; each set is a Claude plugin, and every other agent (Codex included) gets them through the `npx skills add` route. README.md describes the structure and authoring grammar; this file describes the artifacts.
 
 **Update this file every time you add or remove an artifact** — the README intentionally avoids naming specifics so that drift only ever happens here.
 
@@ -17,7 +17,11 @@ Skills load when their `description` matches user intent. There is no `/<name>` 
 | [`slidev-deck`](skills/engineer/slidev-deck/SKILL.md) | Author or refactor a Slidev deck (a `slides.md`, especially under jiajun's `slides-hub` repo) following the concise "one-claim-per-slide" house style; covers layout grammar, page-size budgets, the build/verify loop, and the recurring overflow / separator / illustration pitfalls.   |
 | [`svg-to-png-render`](skills/engineer/svg-to-png-render/SKILL.md) | Render SVG files to exact-dimension PNG screenshots using a real Chromium browser. Use when converting SVG diagrams or vector artifacts into PNGs for GitHub README display, documentation, visual verification, or non-cropped export.                                           |
 
-No other sets ship yet — see [`INSTRUCTION.md`](./INSTRUCTION.md) §1 for how to add one (e.g. a future `research` set) when there's an original skill to put in it.
+### Set: `research` — investigating and writing up (`research@viberesearch`)
+
+| Name               | Trigger description                                                                                                                                                                                                                                                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`readme-generator`](skills/research/readme-generator/SKILL.md) | Use when creating or rewriting README.md for projects. Triggers on "write README", "create README", "update README". Creates human-focused documentation with proper structure. Takes content from [serejaris/personal-corp-skills](https://github.com/serejaris/personal-corp-skills/tree/b517d36f4e047fcc38f3430df6e0bfe86ed44555/skills/readme-generator) at that pinned commit — diff against it to pick up upstream changes. Step 1 calls `mcp__exa__web_search_exa`; without an Exa MCP server configured, that step has nothing to call. |
 
 The set a local skill belongs to is declared in `.claude-plugin/marketplace.json` (the `skills` array of the set's plugin entry) — the directory placement under `skills/<set>/` mirrors it for humans, and `scripts/doctor.sh` enforces that the two stay in sync.
 
@@ -56,7 +60,7 @@ None registered by default. Add to `.mcp.json` when the agent needs a new tool o
 
 ```
 /reload-plugins
-/skills           # should list every skill above (prefixed `engineer:` when ambiguous)
+/skills           # should list every skill above (prefixed `engineer:` / `research:` when ambiguous)
 /mcp              # should be empty until MCP servers are added to .mcp.json
 /doctor           # plugin health summary
 ```

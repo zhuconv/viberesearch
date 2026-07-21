@@ -4,7 +4,7 @@
     "name": "zhuconv"
   },
   "metadata": {
-    "description": "Personal skills for vibe research/coding, organized into sets by directory (currently: engineer). Install via `npx skills add zhuconv/viberesearch`."
+    "description": "Personal skills for vibe research/coding, organized into sets by directory (currently: engineer, research). Install via `npx skills add zhuconv/viberesearch`."
   },
   "plugins": [
     {
@@ -17,7 +17,18 @@
         "./skills/engineer/slidev-deck",
         "./skills/engineer/svg-to-png-render"
       ],
-      "version": "0.5.0"
+      "version": "0.6.0"
+    },
+    {
+      "name": "research",
+      "source": "./",
+      "strict": false,
+      "description": "Research set: generating human-focused README documentation.",
+      "category": "productivity",
+      "skills": [
+        "./skills/research/readme-generator"
+      ],
+      "version": "0.6.0"
     }
   ]
 }
